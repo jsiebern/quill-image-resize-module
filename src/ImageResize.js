@@ -12,6 +12,7 @@ const knownModules = { DisplaySize, Toolbar, Resize };
  * @see https://quilljs.com/blog/building-a-custom-module/
  */
 export default class ImageResize {
+    _timer = null;
 
     constructor(quill, options = {}) {
         // save the quill reference and options
@@ -37,6 +38,7 @@ export default class ImageResize {
 
         // respond to clicks inside the editor
         this.quill.root.addEventListener('click', this.handleClick, false);
+        this.quill.root.addEventListener('scroll', this.handleScroll, false);
 
         this.quill.root.parentNode.style.position = this.quill.root.parentNode.style.position || 'relative';
 
@@ -101,6 +103,13 @@ export default class ImageResize {
             // clicked on a non image
             this.hide();
         }
+    };
+
+    handleScroll = () => {
+        window.clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+            this.repositionElements();
+        }, 50);
     };
 
     show = (img) => {
